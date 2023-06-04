@@ -1,5 +1,3 @@
 .vscode/
 *.exe
-!stserverapp.exe
-!stclientapp.exe
 test.cpp
