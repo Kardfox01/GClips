@@ -3,7 +3,7 @@
 #include <mutex>
 
 
-class Server: public Socket {
+class Server final: public Socket {
     std::mutex _mutex;
     std::vector<SOCKET> clients;
 
@@ -28,7 +28,7 @@ class Server: public Socket {
     }
 
 public:
-    Server(
+    explicit Server(
         const char* host,
         unsigned short port
     ): Socket(host, port) {}

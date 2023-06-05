@@ -1,7 +1,7 @@
 #include "../socket.cpp"
 
 
-class Client: public Socket {
+class Client final: public Socket {
     bool thread_flag = true;
 
     void _recv() {

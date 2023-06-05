@@ -7,7 +7,7 @@
 
 #pragma comment (lib, "Ws2_32.lib")
 
-LPCWSTR ERRORS[] = {
+static LPCWSTR ERRORS[] = {
     // SOCKET_ERRORS
     L"Ошибка при создании сокета",           // 0
     L"Неправильный IP-адрес",                // 1
@@ -34,7 +34,7 @@ protected:
     const char* host;
     unsigned short port;
 
-    Socket(const char* host, unsigned short port): host(host), port(port) {
+    explicit Socket(const char* host, unsigned short port): host(host), port(port) {
         booted = boot();
         std::wcout << std::endl << "Host: " << host << std::endl;
         std::wcout << "Port: " << port << std::endl;
@@ -92,7 +92,7 @@ public:
 
     void _send(std::wstring& data) {}
 
-    bool is_booted() {
+    bool is_booted() const {
         return booted;
     }
 
