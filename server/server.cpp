@@ -10,19 +10,20 @@ class Server final: public Socket {
     void _accept() {
         sockaddr_in client_info;
         int client_info_size = sizeof(client_info);
+        SOCKET client;
 
-        while (thread_flag) {
+        while (
+            (client = accept(_socket, (sockaddr*)&client_info, &client_info_size)) &&
+            client != INVALID_SOCKET
+        ) {
+            _mutex.lock();
+
+            clients.push_back(client);
+            std::wcout << "Accepted client" << std::endl;
+
+            _mutex.unlock();
+
             ZeroMemory(&client_info, sizeof(client_info));
-
-            SOCKET client = accept(_socket, (sockaddr*)&client_info, &client_info_size);
-            if (client != INVALID_SOCKET) {
-                _mutex.lock();
-
-                clients.push_back(client);
-                std::wcout << "Accepted client" << std::endl;
-
-                _mutex.unlock();
-            }
         }
         std::wcout << std::endl << "_accept thread exit: TRUE" << std::endl;
     }
@@ -54,7 +55,7 @@ public:
 
     void _send(std::wstring& data) {
         std::wcout << std::endl << "Send data to " << clients.size() << " clients" << std::endl;
-        for (int i = 0; i < clients.size(); i++) {
+        for (unsigned short i = 0; i < clients.size(); i++) {
             std::wstring size     = std::to_wstring(data.size()),
                          new_data = size + std::wstring(DATA_LENGTH - size.size(), '*') + data;
             std::wcout << "Client " << i << ": " << new_data;

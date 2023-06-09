@@ -28,8 +28,7 @@ protected:
     const short DATA_LENGTH = 10;
 
     SOCKET _socket;
-    bool booted = false,
-         thread_flag = true;
+    bool booted = false;
 
     const char* host;
     unsigned short port;
@@ -97,7 +96,6 @@ public:
     }
 
     ~Socket() {
-        thread_flag = false;
         shutdown(_socket, SD_BOTH);
         closesocket(_socket);
         WSACleanup();
