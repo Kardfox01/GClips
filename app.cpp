@@ -10,11 +10,6 @@ void show_message(LPCWSTR message, long type = MB_ICONINFORMATION) {
 }
 
 template<typename T>
-void clipboard(int, void* app_reference) {
-    
-}
-
-template<typename T>
 class App {
     T* _socket = NULL;
 
