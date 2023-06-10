@@ -10,19 +10,8 @@ void show_message(LPCWSTR message, long type = MB_ICONINFORMATION) {
 }
 
 template<typename T>
-void clipboard(int, void* _socket) {
-    if (OpenClipboard(NULL)) {
-        HANDLE hData = GetClipboardData(CF_UNICODETEXT);
-        if (hData != NULL) {
-            LPWSTR lpData = (LPWSTR)GlobalLock(hData);
-            if (lpData != NULL) {
-                std::wstring text(lpData);
-                ((T*)_socket)->_send(text);
-                GlobalUnlock(hData);
-            }
-        }
-        CloseClipboard();
-    }
+void clipboard(int, void* app_reference) {
+    
 }
 
 template<typename T>
@@ -53,31 +42,30 @@ public:
         Fl_Return_Button* button = new Fl_Return_Button(20, 100, 300, 30, "Запустить");
         button->color(fl_rgb_color(230, 230, 230));
         button->box(FL_THIN_UP_BOX);
-        button->callback([](Fl_Widget* widget, void* app_ref) {
+        button->callback([](Fl_Widget* widget, void* app_reference) {
+            App* app = (App*)app_reference;
             const char* host = dynamic_cast<Fl_Input*>(widget->window()->child(0))->value();
             const char* port = dynamic_cast<Fl_Input*>(widget->window()->child(1))->value();
-
-            App* app = (App*)app_ref;
             Fl_Return_Button* button = (Fl_Return_Button*)widget;
-            T* _socket = app->set_socket(new T(host, std::atoi(port)));
 
-            if (_socket->is_booted()) {
-                try {
-                    button->label("В процессе...");
-                    Fl::check();
-                    _socket->start();
+            try {
+                button->label("В процессе...");
+                button->redraw();
+                if (app->restart_socket(host, port)) {
                     if (T::type == SERVER) {
                         show_message(L"Сервер запущен");
                         Fl::remove_clipboard_notify(clipboard<T>);
-                        Fl::add_clipboard_notify(clipboard<T>, _socket);
+                        Fl::add_clipboard_notify([](int, void* app_reference) {
+                            ((App*)app_reference)->send();
+                        }, app);
                     } else {
                         show_message(L"Подключение к серверу успешно");
                     }
-                } catch (int error) {
-                    show_message(ERRORS[error]);
+                } else {
+                    show_message(L"Несовместимая версия ОС/сокетов", MB_ICONERROR);
                 }
-            } else {
-                show_message(L"Несовместимая версия ОС/сокетов", MB_ICONERROR);
+            } catch (int error) {
+                show_message(ERRORS[error]);
             }
 
            button->label("Перезапуск");
@@ -87,10 +75,26 @@ public:
         Fl::run();
     }
 
-    T* set_socket(T* new_socket) {
+    void send() {
+        if (OpenClipboard(NULL)) {
+            HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+            if (hData != NULL) {
+                LPWSTR lpData = (LPWSTR)GlobalLock(hData);
+                if (lpData != NULL) {
+                    std::wstring text(lpData);
+                    _socket->_send(text);
+                    GlobalUnlock(hData);
+                }
+            }
+            CloseClipboard();
+        }
+    }
+
+    bool restart_socket(const char* host, const char* port) {
         delete _socket;
-        _socket = new_socket;
-        return _socket;
+        _socket = new T(host, std::atoi(port));
+        _socket->start();
+        return _socket->is_booted();
     }
 
     ~App() {

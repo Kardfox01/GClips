@@ -1,10 +1,8 @@
 #include "../socket.cpp"
 #include <vector>
-#include <mutex>
 
 
 class Server final: public Socket {
-    std::mutex _mutex;
     std::vector<SOCKET> clients;
 
     void _accept() {
@@ -16,13 +14,8 @@ class Server final: public Socket {
             (client = accept(_socket, (sockaddr*)&client_info, &client_info_size)) &&
             client != INVALID_SOCKET
         ) {
-            _mutex.lock();
-
             clients.push_back(client);
             std::wcout << "Accepted client" << std::endl;
-
-            _mutex.unlock();
-
             ZeroMemory(&client_info, sizeof(client_info));
         }
         std::wcout << std::endl << "_accept thread exit: TRUE" << std::endl;
