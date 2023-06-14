@@ -13,6 +13,10 @@ template<typename T>
 class App {
     T* _socket = NULL;
 
+    static void clipboard_notify(int, void* app_reference) {
+        ((App*)app_reference)->send();
+    }
+
 public:
     App(const char* title) {
         SetConsoleOutputCP(65001);
@@ -49,10 +53,8 @@ public:
                 if (app->restart_socket(host, port)) {
                     if (T::type == SERVER) {
                         show_message(L"Сервер запущен");
-                        Fl::remove_clipboard_notify(clipboard<T>);
-                        Fl::add_clipboard_notify([](int, void* app_reference) {
-                            ((App*)app_reference)->send();
-                        }, app);
+                        Fl::remove_clipboard_notify(clipboard_notify);
+                        Fl::add_clipboard_notify(clipboard_notify, app);
                     } else {
                         show_message(L"Подключение к серверу успешно");
                     }

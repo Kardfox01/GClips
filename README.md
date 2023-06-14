@@ -1,5 +1,5 @@
 # GClips
-[![Release](https://img.shields.io/github/v/release/Kardfox01/GClips.svg)](https://github.com/Kardfox01/GClips/releases/tag/v1.0.3) ![Windows](https://badgen.net/badge/windows10/builded/green?icon=github)
+[![Release](https://img.shields.io/github/v/release/Kardfox01/GClips.svg)](https://github.com/Kardfox01/GClips/releases/tag/v1.0.4) ![Windows](https://badgen.net/badge/windows10/builded/green?icon=github)
 ________________
 **GClips** - открытый проект для создания общего буфера обмена между множеством компьютеров с ОС Windows 10.
 

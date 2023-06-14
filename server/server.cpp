@@ -12,7 +12,7 @@ class Server final: public Socket {
 
         while (
             (client = accept(_socket, (sockaddr*)&client_info, &client_info_size)) &&
-            client != INVALID_SOCKET
+             client != INVALID_SOCKET
         ) {
             clients.push_back(client);
             std::wcout << "Accepted client" << std::endl;
@@ -57,9 +57,8 @@ public:
 
             if(
                 send(clients[i], (char*)new_data.data(), new_data.size()*sizeof(WCHAR), 0) == SOCKET_ERROR
-            ) clients.erase(
-                clients.begin() + i
-            );
+            )
+                clients.erase(clients.begin() + i);
         }
     }
 
