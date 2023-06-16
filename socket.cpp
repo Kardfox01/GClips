@@ -4,6 +4,7 @@
 #include <ws2tcpip.h>
 #include <iostream>
 #include <thread>
+#include <vector>
 
 #pragma comment (lib, "Ws2_32.lib")
 
@@ -68,25 +69,27 @@ protected:
     }
 
 public:
-    static const unsigned short default_ip = 5001;
+    static constexpr const char default_ip[5] = "5001";
+    static constexpr const char localhost[10] = "127.0.0.1";
 
-    static void get_host(std::string& ip) {
+    static void get_hosts(std::vector<const char*>& hosts) {
+        hosts.push_back(localhost);
         WSADATA ws_data;
         struct hostent *host;
-        char *host_name;
         struct in_addr addr;
 
-        if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) ip.append("ERROR");
+        WSAStartup(MAKEWORD(2, 2), &ws_data);
         host = gethostbyname(std::getenv("COMPUTERNAME"));
-        if (host != NULL)
+        if (host != NULL) {
             if (host->h_addrtype == AF_INET) {
-                USHORT i = 0;
-                while (host->h_addr_list[i++] != 0) {}
-                if (host->h_addr_list[i] != 0) {
-                    addr.s_addr = *(u_long*)host->h_addr_list[0];
-                    ip.append(inet_ntoa(addr));
+                unsigned short i = 0;
+                while (host->h_addr_list[i] != 0) {
+                    addr.s_addr = *(u_long*)host->h_addr_list[i++];
+                    hosts.push_back(inet_ntoa(addr));
+                    std::wcout << hosts[i] << std::endl;
                 }
             }
+        }
     }
 
     void _send(std::wstring& data) {}
