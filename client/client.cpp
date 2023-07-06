@@ -1,4 +1,5 @@
 #include "../socket.cpp"
+#include "../app.cpp"
 
 
 class Client final: public Socket {
@@ -28,18 +29,12 @@ class Client final: public Socket {
     }
 
 public:
+    static const Type type = CLIENT;
+
     Client(
         const char* host,
         unsigned short port
-    ): Socket(host, port) {}
-
-    static const Type type = CLIENT;
-    std::thread recv_thread;
-
-    void start() {
-        sockaddr_in server_info;
-        Socket::start_socket(server_info);
-
+    ): Socket(host, port) {
         if (connect(_socket, (sockaddr*)&server_info, sizeof(server_info)) != 0) {
             booted = false; throw 4;
         }
@@ -47,8 +42,10 @@ public:
 
         std::thread(_recv, this).detach();
     }
-
-    ~Client() {
-        std::wcout << "Client exit: TRUE" << std::endl;
-    }
 };
+
+
+int main() {
+    App<Client> app("GClips - Client");
+    return 0;
+}

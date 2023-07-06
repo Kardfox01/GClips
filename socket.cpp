@@ -34,13 +34,13 @@ protected:
     const char* host;
     unsigned short port;
 
+    sockaddr_in server_info;
+
     explicit Socket(const char* host, unsigned short port): host(host), port(port) {
         booted = boot();
         std::wcout << std::endl << "Host: " << host << std::endl;
         std::wcout << "Port: " << port << std::endl;
-    }
 
-    void start_socket(sockaddr_in& server_info) {
         if (!booted) throw 0;
         std::wcout << "Booted: TRUE" << std::endl;
 

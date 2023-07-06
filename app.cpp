@@ -12,10 +12,10 @@ void show_message(LPCWSTR message, long type = MB_ICONINFORMATION) {
 
 template<typename T>
 class App {
-    T* _socket = NULL;
+    T* _socket = nullptr;
 
-    static void clipboard_notify(int, void* app_reference) {
-        ((App*)app_reference)->send();
+    static void clipboard_notify(int, void* app_ptr) {
+        static_cast<App*>(app_ptr)->send();
     }
 
 public:
@@ -42,11 +42,11 @@ public:
         Fl_Return_Button* button = new Fl_Return_Button(20, 100, 300, 30, "Запустить");
         button->color(fl_rgb_color(230, 230, 230));
         button->box(FL_FLAT_BOX);
-        button->callback([](Fl_Widget* widget, void* app_reference) {
-            App* app = (App*)app_reference;
-            const char* host = dynamic_cast<Fl_Input_Choice*>(widget->window()->child(0))->value();
-            const char* port = dynamic_cast<Fl_Input*>(widget->window()->child(1))->value();
-            Fl_Return_Button* button = (Fl_Return_Button*)widget;
+        button->callback([](Fl_Widget* widget, void* app_ptr) {
+            App* app                 = static_cast<App*>(app_ptr);
+            const char* host         = static_cast<Fl_Input_Choice*>(widget->window()->child(0))->value();
+            const char* port         = static_cast<Fl_Input*>(widget->window()->child(1))->value();
+            Fl_Return_Button* button = static_cast<Fl_Return_Button*>(widget);
 
             try {
                 button->label("В процессе...");
@@ -54,7 +54,6 @@ public:
                 if (app->restart_socket(host, port)) {
                     if (T::type == SERVER) {
                         show_message(L"Сервер запущен");
-                        Fl::remove_clipboard_notify(clipboard_notify);
                         Fl::add_clipboard_notify(clipboard_notify, app);
                     } else {
                         show_message(L"Подключение к серверу успешно");
@@ -89,9 +88,9 @@ public:
     }
 
     bool restart_socket(const char* host, const char* port) {
-        delete _socket;
+        if (_socket != nullptr)
+            delete _socket;
         _socket = new T(host, std::atoi(port));
-        _socket->start();
         return _socket->is_booted();
     }
 

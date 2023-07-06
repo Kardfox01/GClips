@@ -1,5 +1,5 @@
 # GClips
-[![Release](https://img.shields.io/github/v/release/Kardfox01/GClips.svg)](https://github.com/Kardfox01/GClips/releases/tag/v1.0.4) ![Windows](https://badgen.net/badge/windows10/builded/green?icon=github)
+[![Release](https://img.shields.io/github/v/release/Kardfox01/GClips.svg)](https://github.com/Kardfox01/GClips/releases/tag/v1.0.5) ![Windows](https://badgen.net/badge/windows10/builded/green?icon=github)
 ________________
 **GClips** - открытый проект для создания общего буфера обмена между множеством компьютеров с ОС Windows 10.
 
@@ -12,6 +12,6 @@ ________________
 ## Компиляция
 Проект был создан при помощи лишь одной сторонней библиотеки - `FLTK` - для пользовательского интерфейса и скомпилирован с помощью `MINGW64`.
 Компиляция:
-```
- g++ ______app.cpp -o st______app.exe -I/mingw64/include -march=x86-64 -mtune=generic -O2 -pipe -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -pipe -Wl,-subsystem,windows -mwindows /mingw64/lib/libfltk.a -lole32 -luuid -lcomctl32 -lws2_32 --static
+```cmd
+g++ ______.cpp -o ______.exe -I/mingw64/include -march=x86-64 -mtune=generic -O2 -pipe -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -pipe -Wl,-subsystem,windows -mwindows /mingw64/lib/libfltk.a -lole32 -luuid -lcomctl32 -lws2_32 --static
 ```

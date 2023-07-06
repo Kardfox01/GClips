@@ -1,4 +1,5 @@
 #include "../socket.cpp"
+#include "../app.cpp"
 
 
 class Server final: public Socket {
@@ -21,17 +22,12 @@ class Server final: public Socket {
     }
 
 public:
+    static const Type type = SERVER;
+
     explicit Server(
         const char* host,
         unsigned short port
-    ): Socket(host, port) {}
-
-    static const Type type = SERVER;
-
-    void start() {
-        sockaddr_in server_info;
-        Socket::start_socket(server_info);
-
+    ): Socket(host, port) {
         if (bind(_socket, (sockaddr*)&server_info, sizeof(server_info)) != 0) {
             booted = false; throw 2;
         }
@@ -60,8 +56,10 @@ public:
                 clients.erase(clients.begin() + i);
         }
     }
-
-    ~Server() {
-        std::wcout << "Server exit: TRUE" << std::endl;
-    }
 };
+
+
+int main() {
+    App<Server> app("GClips - Server");
+    return 0;
+}
