@@ -6,7 +6,7 @@
 #include <thread>
 #include <vector>
 
-#pragma comment (lib, "Ws2_32.lib")
+// #pragma comment (lib, "Ws2_32.lib")
 
 static LPCWSTR ERRORS[] = {
     // SOCKET_ERRORS
@@ -26,7 +26,7 @@ enum Type {
 
 class Socket {
 protected:
-    const short DATA_LENGTH = 10;
+    const short DATA_LENGTH = 8;
 
     SOCKET _socket;
     bool booted = false;
@@ -36,19 +36,21 @@ protected:
 
     sockaddr_in server_info;
 
-    explicit Socket(const char* host, unsigned short port): host(host), port(port) {
+    explicit Socket(
+        const char* host, unsigned short port
+    ): host(host), port(port) {
         booted = boot();
-        std::wcout << std::endl << "Host: " << host << std::endl;
-        std::wcout << "Port: " << port << std::endl;
+        std::cout << std::endl << "Host: " << host << std::endl;
+        std::cout << "Port: " << port << std::endl;
 
         if (!booted) throw 0;
-        std::wcout << "Booted: TRUE" << std::endl;
+        std::cout << "Booted: TRUE" << std::endl;
 
         in_addr addr;
         if (inet_pton(AF_INET, host, &addr) <= 0) {
             booted = false; throw 1;
         }
-        std::wcout << "Correct IP: TRUE" << std::endl;
+        std::cout << "Correct IP: TRUE" << std::endl;
 
         ZeroMemory(&server_info, sizeof(server_info));
         server_info.sin_family = AF_INET;
@@ -56,7 +58,7 @@ protected:
         server_info.sin_port = htons(port);
     }
 
-    bool boot() {
+    bool boot() noexcept {
         WSADATA ws_data;
         if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0)
             return false;
@@ -69,11 +71,8 @@ protected:
     }
 
 public:
-    static constexpr const char default_ip[5] = "5001";
-    static constexpr const char localhost[10] = "127.0.0.1";
-
-    static void get_hosts(std::vector<const char*>& hosts) {
-        hosts.push_back(localhost);
+    static void get_hosts(std::vector<const char*>& hosts) noexcept {
+        hosts.push_back("127.0.0.1");
         WSADATA ws_data;
         struct hostent *host;
         struct in_addr addr;
@@ -86,15 +85,14 @@ public:
                 while (host->h_addr_list[i] != 0) {
                     addr.s_addr = *(u_long*)host->h_addr_list[i++];
                     hosts.push_back(inet_ntoa(addr));
-                    std::wcout << hosts[i] << std::endl;
                 }
             }
         }
     }
 
-    void _send(std::wstring& data) {}
+    void _send(std::wstring& data) const noexcept {}
 
-    bool is_booted() const {
+    bool is_booted() const noexcept {
         return booted;
     }
 
@@ -102,6 +100,6 @@ public:
         shutdown(_socket, SD_BOTH);
         closesocket(_socket);
         WSACleanup();
-        std::wcout << "Socket exit: TRUE" << std::endl;
+        std::cout << "Socket exit: TRUE" << std::endl;
     }
 };

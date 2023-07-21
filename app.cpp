@@ -20,8 +20,7 @@ class App {
 
 public:
     App(const char* title) {
-        SetConsoleOutputCP(65001);
-        std::wcout << "COMPUTER: " << std::getenv("COMPUTERNAME") << std::endl;
+        std::cout << "COMPUTER: " << std::getenv("COMPUTERNAME") << std::endl;
 
         Fl_Window* window = new Fl_Window(340, 140, title);
         window->color(FL_WHITE);
@@ -37,16 +36,16 @@ public:
         Fl_Input* port_input = new Fl_Input(120, 60, 60, 25, "Порт");
         port_input->color(fl_rgb_color(230, 230, 230));
         port_input->box(FL_BORDER_FRAME);
-        port_input->static_value(Socket::default_ip);
+        port_input->static_value("5001");
 
         Fl_Return_Button* button = new Fl_Return_Button(20, 100, 300, 30, "Запустить");
         button->color(fl_rgb_color(230, 230, 230));
         button->box(FL_FLAT_BOX);
         button->callback([](Fl_Widget* widget, void* app_ptr) {
             App* app                 = static_cast<App*>(app_ptr);
-            const char* host         = static_cast<Fl_Input_Choice*>(widget->window()->child(0))->value();
-            const char* port         = static_cast<Fl_Input*>(widget->window()->child(1))->value();
-            Fl_Return_Button* button = static_cast<Fl_Return_Button*>(widget);
+            const char* host         = dynamic_cast<Fl_Input_Choice*>(widget->window()->child(0))->value();
+            const char* port         = dynamic_cast<Fl_Input*>(widget->window()->child(1))->value();
+            Fl_Return_Button* button = dynamic_cast<Fl_Return_Button*>(widget);
 
             try {
                 button->label("В процессе...");
@@ -72,7 +71,7 @@ public:
         Fl::run();
     }
 
-    void send() {
+    void send() const noexcept {
         if (OpenClipboard(NULL)) {
             HANDLE hData = GetClipboardData(CF_UNICODETEXT);
             if (hData != NULL) {
@@ -87,7 +86,7 @@ public:
         }
     }
 
-    bool restart_socket(const char* host, const char* port) {
+    bool restart_socket(const char* host, const char* port) noexcept {
         if (_socket != nullptr)
             delete _socket;
         _socket = new T(host, std::atoi(port));
@@ -96,6 +95,6 @@ public:
 
     ~App() {
         delete _socket;
-        std::wcout << "App exit: TRUE" << std::endl;
+        std::cout << "App exit: TRUE" << std::endl;
     }
 };
