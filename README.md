@@ -15,3 +15,7 @@ ________________
 ```cmd
  g++ ______.cpp -o ______ -march=x86-64 -O2 -mwindows -lfltk -lws2_32 --static -s
 ```
+или используя утилиту `fltk-config`:
+```cmd
+g++ server.cpp -o server `fltk-config --cxxflags --ldstaticflags` --static -s
+```
